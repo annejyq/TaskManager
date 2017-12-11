@@ -1,0 +1,80 @@
+<div class="jumbotron">
+  <h4 class="display-4">{{ModifyTaskName}}</h4>
+  <form id="CreateTask">
+    <div class = "row">
+      <div class="col">
+        <div class="form-group">
+        <label for="TaskName">Task Name</label> 
+        <input class="form-control" id="TaskName" value='{{ModifyTaskName}}' disabled="disabled">
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+        <label for="ProjectName">Project</label>
+        <input class="form-control" id="ProjectName" value='{{ModifyProjectName}}'>
+        </div>
+      </div>
+    </div>
+    <div class = "row">
+      <div class = "col">
+        <div class="form-group">
+        <label for="Deadline">Task Deadline</label>
+        <input class="form-control" type="date" id="Deadline" value={{ModifyDeadline}}>
+        </div>
+      </div>
+      <div>
+        <div class="form-group">
+          <label for="Status">Status</label>
+          <select class="form-control" id="Status">
+            <option>To Do</option>
+            <option>In Progress</option>
+            <option>Done</option>
+          </select>
+        </div>
+      </div>
+    </div>
+      <div class="form-group">
+        <label for="Assignee">Assignee</label>
+        <textarea class="form-control" id="Assignee" rows="3">{{ModifyAssignee}}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="Description">Task Description</label>
+        <textarea class="form-control" id="Description" rows="5">{{ModifyDescription}}</textarea>
+      </div>
+
+      <button type="button" class="btn btn-primary" onclick="Modify()">Confirm</button>
+      <button type="button" class="btn btn-primary" onclick="Return()">Return</button>
+  </form>
+
+  <script>
+      function Modify() {
+        var taskname = document.getElementById("TaskName").value;
+        var projectname = document.getElementById("ProjectName").value;
+        var deadline = document.getElementById("Deadline").value;
+        var assignee = document.getElementById("Assignee").value;
+        var description = document.getElementById("Description").value;
+        var status = document.getElementById("Status").value;
+        var obj = {"TaskName":taskname, "ProjectName": projectname, "Deadline": deadline, "Assignee": assignee,"Description":description,"Status":status};
+        $.ajax({
+                type : "POST",
+                url : "/postcreatetask",
+                //dataType : "json",
+                data: JSON.stringify(obj),
+                contentType: "application/json",
+                success:function(data){
+                  console.log(data);
+                  if(data = 'Complete Post Create Task'){
+                    window.location = '/';
+                  }
+                  //$('div').html(data); 
+                },
+                failure:function(errMsg){console.log(errMsg);}
+              });
+      }
+
+      function Return(){
+        window.history.back();
+      }
+  </script>
+</div>

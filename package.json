@@ -1,0 +1,21 @@
+{
+  "name": "apptest",
+  "version": "1.0.0",
+  "description": "Test",
+  "main": "testindex.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amazon-cognito-identity-js": "^1.28.0",
+    "aws-sdk": "^2.167.0",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "express-formidable": "^1.0.0",
+    "express-handlebars": "^3.0.0",
+    "formidable": "^1.1.1",
+    "request": "^2.83.0"
+  }
+}

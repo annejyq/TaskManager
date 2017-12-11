@@ -1,0 +1,91 @@
+<div class="jumbotron">
+  <h1 class="display-4">{{TaskName}}</h1>
+  <p class="lead">{{Description}}</p>
+  <hr class="my-4">
+  <p><strong>Project Name: </strong>{{ProjectName}}</p>
+  <p><strong>Deadline: </strong>{{Deadline}}</p>
+  <p><strong>Assignee: </strong>{{Assignee}}</p>
+  <p><strong>Status: </strong>{{Status}}</p>
+  <p id="FilePanel"><strong>Download File: </strong></p>
+  {{!-- <p class="lead"> --}}
+    
+  {{!-- </p> --}}
+  <form action="/upload/{{TaskName}}" enctype="multipart/form-data" method="POST" >
+    <div class="row">
+      <div class="col col col-lg-3">
+        <div class="form-group">
+          <label for="exampleFormControlFile1"><strong>Upload File for This Task</strong></label>
+          <input type="file" class="form-control-file" id="exampleFormControlFile1" name="file" >
+        </div>
+      </div>
+      <div class="col col col-lg-4">
+        <button type="submit" class="btn btn-outline-primary">Upload</button>
+      </div>
+    </div>
+  </form>
+  <button type="button" class="btn btn-primary" onclick="Modify()">Modify</button>
+  <button type="button" class="btn btn-danger" onclick="Delete()">Delete</button>
+
+</div>
+<script type="text/javascript">
+$( document ).ready(function() {
+    var linknum = {{LinkNumber}};
+    if(linknum > 0){
+        addFileLink(linknum);
+    }
+});
+var test = "{{FileName}}".replace(/&quot;/g, '"');
+var FileName = JSON.parse(test).filename
+console.log(FileName);
+
+var addFileLink = function(num){
+  for (var i = 0; i < num; i++) {
+    var fn = FileName[i];
+    var tn = "{{TaskName}}".replace(/ /g,"%20");
+    //tn = tn.replace(/ /g,"%20");
+    myLink = $('<p><a href="/download/'+tn+'/'+fn+'">'+fn+'</a></p>');
+    myLink.appendTo('#FilePanel');
+  }
+};
+
+
+function Delete(){
+	if(confirm("Are You Sure You Want To Delete This Task?") == true){
+    var obj = {"DeleteTaskName":'{{TaskName}}'};
+    $.ajax({
+      type : "POST",
+      url : '/deletetask',
+      data: JSON.stringify(obj),
+      contentType: "application/json",
+      success:function(data){
+        if(data == 'Delete Success'){
+          alert('Delete This Task Successfully!');
+          window.location = '/';
+        }
+      },
+      failure:function(errMsg){console.log(errMsg);}
+    });
+	}
+}
+
+function Modify(){
+  var obj = {"ModifyTaskName":'{{TaskName}}', "ModifyProjectName": '{{ProjectName}}', "ModifyDeadline": '{{Deadline}}', "ModifyAssignee": '{{Assignee}}',"ModifyDescription": '{{Description}}', "ModifyStatus": '{{Status}}'};
+        $.ajax({
+                type : "POST",
+                url : '/modify',
+                //dataType : "json",
+                data: JSON.stringify(obj),
+                contentType: "application/json",
+                success:function(data){
+                  console.log(data);
+                  if(data == 'Complete Posting Modify'){
+                    window.location = '/modify';
+                  }
+                  //$('div').html(data); 
+                },
+                failure:function(errMsg){console.log(errMsg);}
+                //success:function(data){window.location = '/';},
+                //failure:function(errMsg){window.location = '/';}
+              });
+}
+</script>

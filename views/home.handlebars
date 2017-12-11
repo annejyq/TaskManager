@@ -1,0 +1,41 @@
+<div class="jumbotron">
+  <h1 class="display-4">Welcome to Task Manager!</h1>
+  <p class="lead">Plan, track, and manage your software development projects. Customize your workflow, collaborate, and release great software.</p>
+{{!--   <hr class="my-4"> --}}
+</div>
+<div class="container">
+    <br>
+    <div class="row" id="contentPanel">
+    </div>
+</div>
+<script type="text/javascript">
+$( document ).ready(function() {
+    var tasknum = {{number}};
+    if(tasknum > 0){
+        addCols(tasknum);
+    }
+});
+//var alltask = {{items}}(0);
+var test = "{{info}}".replace(/&quot;/g, '"');
+var items = JSON.parse(test).items
+console.log(items);
+var addCols = function (num){
+    for (var i=0;i<num;i++) {
+        var taskname = items[i].Task;
+        var description = items[i].Description;
+        var myCol = $('<div class="col-sm-6"></div>');
+        var myCard = $('<div class="card"></div>');
+        var myCardBody = $('<div class="card-body"></div>');
+        var myPanel = $('<h4 class="card-title">'+taskname+'</h4><p class="card-text">'+description+'</p><a href="/task/'+taskname+'" class="btn btn-primary">View In Detail</a>');
+        myPanel.appendTo(myCardBody);
+        myCardBody.appendTo(myCard);
+        myCard.appendTo(myCol);
+        myCol.appendTo('#contentPanel');
+    }
+};
+
+// $('#btnGen').click(function(){
+//     addCols($('#numPanels').val());
+//     return false;
+// });
+</script>
