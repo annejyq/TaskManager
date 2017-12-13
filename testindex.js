@@ -9,7 +9,11 @@ var handlebars = require('express-handlebars').create({defaultLayout:'main'});
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
+
+
 var server = require('http').createServer(app);
+var https = require('https');
+var httpsPort = 3443;
 // Required when sending RESTful HTTP Request
 // npm install --save request
 var request = require('request');
@@ -25,6 +29,7 @@ var bodyParser = require('body-parser');
 // Formidable is required to accept file uploads
 // npm install --save formidable
 var formidable = require('formidable');
+
 // Create a directory called public and then a directory
 // named img inside of it and put logo in there
 app.use(express.static(__dirname + '/public'));
@@ -35,13 +40,25 @@ app.use(express.json());
 var AWS = require('aws-sdk');
 var AWSCognito = require('amazon-cognito-identity-js');
 
+// PEM pass phrase: testtest
+var privateKey = fs.readFileSync('sslcert/key.pem','utf8');
+var certificate = fs.readFileSync('sslcert/cert.pem','utf8');
+var credentials = {
+	requestCert: false,
+	rejectUnauthorized: false,
+	key: privateKey, 
+	cert: certificate, 
+	passphrase: 'testtest'};
+var httpsServer = https.createServer(credentials, app);
 // Global Variables
 var UserCognito;
 var token;
+
 var endpoint = 'https://rgsghi9075.execute-api.us-west-2.amazonaws.com/prod';
 
 // Sign In
 app.get('/signin', function(req, res){
+	console.log('https server sign in');
 	res.sendFile(__dirname + '/public/signin.html');
 });
 
@@ -357,6 +374,11 @@ app.use(function(req, res) {
   // Point at the 404.handlebars view
   res.render('404');
 });
-server.listen(port, hostname, () => {
-	console.log('Server started on port '+ port);
+
+ server.listen(port, hostname, () => {
+ 	console.log('Server started on port '+ port);
+ });
+
+httpsServer.listen(httpsPort, hostname, ()=>{
+	console.log('Https Server started on port ' + httpsPort);
 });
