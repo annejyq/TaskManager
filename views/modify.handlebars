@@ -48,6 +48,9 @@
   </form>
 
   <script>
+  $( document ).ready(function(){
+    $("#Status").val("{{ModifyStatus}}");
+  });
       function Modify() {
         var taskname = document.getElementById("TaskName").value;
         var projectname = document.getElementById("ProjectName").value;

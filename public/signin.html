@@ -65,7 +65,8 @@
 	</div>
   <script type="text/javascript">
     function signup(){
-      location.href = "https://a332659092.auth.us-west-2.amazoncognito.com/signup?response_type=code&client_id=1sk2und7j5i59c6m5adev9veel&redirect_uri=localhost:3000/signin";
+      var cognito_endpoint = "https://a332659092.auth.us-west-2.amazoncognito.com/signup?response_type=code&client_id=1sk2und7j5i59c6m5adev9veel&redirect_uri=localhost:3000/signin";
+      location.href = cognito_endpoint;
     }
     function signin(){
       var username = document.getElementById("username").value;

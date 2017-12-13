@@ -13,6 +13,9 @@ app.set('view engine', 'handlebars');
 
 var server = require('http').createServer(app);
 var https = require('https');
+// Http Server Address: localhost:3000
+var port = 3000;
+// Https Server Address: localhost:3443
 var httpsPort = 3443;
 // Required when sending RESTful HTTP Request
 // npm install --save request
@@ -20,16 +23,13 @@ var request = require('request');
 // Required when reading or writing streaming files
 // Included in Express
 var fs = require('fs');
-// Server Address: loclhost:3000
-var port = 3000;
-var hostname = '127.0.0.1';
+//var hostname = '127.0.0.1';
 // Required when using POST to parse encoded data
 // npm install --save body-parser
 var bodyParser = require('body-parser');
 // Formidable is required to accept file uploads
 // npm install --save formidable
 var formidable = require('formidable');
-
 // Create a directory called public and then a directory
 // named img inside of it and put logo in there
 app.use(express.static(__dirname + '/public'));
@@ -98,9 +98,6 @@ app.post('/postuserid', function(req, res, next){
 		},
 	});
 });
-
-//UserCognito = 'yky';
-//token = '';
 
 // Home Page
 // Query Dynamo DB to get all tasks assigned to current user
@@ -195,6 +192,8 @@ app.get('/task/:taskname',function(req, res, next){
   	console.log('Open Task Detail');
   });
 
+// Download File from S3
+// Query by Task Name and File Name
 app.get('/download/:taskname/:filename', function(req, res, next){
 	var tn = decodeURI(req.path).split("/")[2];
 	var fn = decodeURI(req.path).split("/")[3];
@@ -208,26 +207,19 @@ app.get('/download/:taskname/:filename', function(req, res, next){
 		}
 	request(QueryForFile, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
-        	console.log(body);
-        	//console.log(body);
+			// Write text data into local file
         	var text_data = body;
         	res.writeHead(200, {
         		'Content-Type': 'application/force-download',
         		'Content-disposition':'attachment; filename='+fn
         	});
         	res.end(text_data);
-        	// var path = __dirname + '/' + fn;
-        	// fs.writeFileSync(path, body, function(err){
-        	// 	if(err){
-        	// 		console.log(err);
-        	// 	}
-        	// 	console.log("File Saved");
-        	// });
     	}
 	});
 
 });
 
+// Modify Function
 var User;
 var Current_TaskName;
 var Current_ProjectName;
@@ -247,12 +239,7 @@ app.post('/modify',function(req, res, next){
 
  	next();
  	},function(req, res){
- 	// res.render('home',{
- 	// 	number: 2,
- 	// 	title: 'Express'
- 	 	// });
- 	console.log(Current_TaskName);
- 	console.log('Open Modify Task'); 
+ 	console.log('Open Modify Task : ' + Current_TaskName); 
  });
 
 app.get('/modify', function(req, res, next){
@@ -266,9 +253,7 @@ app.get('/modify', function(req, res, next){
 	});
 });
 
-
-
-
+// Create Task
 app.post('/postcreatetask', function(req, res, next){
    //res.send("You just called the post method at '/hello'!\n");
    Create_TaskName = req.body.TaskName;
@@ -289,15 +274,14 @@ app.post('/postcreatetask', function(req, res, next){
     if (!error && response.statusCode == 200) {
     	console.log(req.body);
         console.log(body);
-        //return res.redirect(303,'/');
-        //next();
         //Redirect to HomePage
         res.send('Complete Post Create Task');
     }
 });
 });
 
-
+// Delete Task
+// Query by User Name and Task Name
 app.post('/deletetask', function(req, res, next){
 	var Delete_TaskName = req.body.DeleteTaskName;
 	var QueryFroDelete = {
@@ -318,6 +302,8 @@ app.post('/deletetask', function(req, res, next){
 
 });
 
+// Upload file onto S3
+// Query by User name, task name, file name and text data
 app.post('/upload/:taskname', function(req, res){
 	var upload_taskname = decodeURI(req.path).split("/")[2];
 	var form = new formidable.IncomingForm();
@@ -327,10 +313,8 @@ app.post('/upload/:taskname', function(req, res){
       	if(err)
         	return res.redirect(303, '/error');
       	console.log('Received File: ' + name);
-      	//console.log(file);
       	var text = fs.readFileSync(file.path).toString('utf-8');
-      	//res.redirect(303, '/error');
-      	console.log(text);
+      	console.log('File Content: ' + text);
       	var QueryForUpload = {
       		url: endpoint + '/upload-file',
     		method: 'POST',
@@ -375,10 +359,10 @@ app.use(function(req, res) {
   res.render('404');
 });
 
- server.listen(port, hostname, () => {
- 	console.log('Server started on port '+ port);
+  server.listen(port, () => {
+  	console.log('Server started on port '+ port);
  });
 
-httpsServer.listen(httpsPort, hostname, ()=>{
+httpsServer.listen(httpsPort, ()=>{
 	console.log('Https Server started on port ' + httpsPort);
 });
